@@ -1,6 +1,6 @@
-# Haskdown
+# HaskJSON
 
-Haskdown is a monadic parser for the Markdown language, written in Haskell.
+HaskJSON is a monadic parser for the JSON language, written in Haskell.
 
 # Supported features
 
