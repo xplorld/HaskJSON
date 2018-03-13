@@ -20,6 +20,7 @@ instance Functor Parser where
     fmap f m = Parser $ \s -> [(f x, y) | (x, y) <- parse m s]
     -- a <$ pb = Parser $ \s -> [(a, s1) | (_, s1) <- parse pb s]
 
+-- p1 <|> p2: if p1 nor success, use p2
 instance Alternative Parser where
     empty = failure
     p1 <|> p2 = Parser $ \s ->
@@ -27,9 +28,9 @@ instance Alternative Parser where
             [] -> parse p2 s
             res -> res
 
--- MonadPlus ++ is actually OR in parser
+-- mplus p q: p and q are both acceptable
 instance MonadPlus Parser where
-    mzero = Parser (const [])
+    mzero = failure 
     mplus p q = Parser (\cs -> parse p cs ++ parse q cs)
 
 
@@ -63,3 +64,14 @@ string (c:cs) = do {
     _ <- string cs;
     return (c:cs)
 }
+
+-- utils
+
+separatorListParser :: Parser a -> Parser b -> Parser [b]
+separatorListParser separator element =
+    do { -- many list
+        x <- element;
+        xs <- many (separator *> element);
+        return $ x:xs;
+    } <|>
+    pure [] -- zero list
