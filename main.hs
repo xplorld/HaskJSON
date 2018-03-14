@@ -26,7 +26,7 @@ main = do {
     _ <- print $ parse arrayParser "[1,2,3]";
     _ <- print $ parse integerParser "12";
     _ <- print $ parse jsonParser "12 ";
-    _ <- print $ parse pairParser "\"hello\":\"world\"";
+    _ <- print $ parse pairParser " \"hello\":\"world\"";
     _ <- print $ parse spaceParser "   ";
     _ <- print $ parse (separatorListParser (char ',') (char 'a')) "a,a,ba";
     _ <- print $ parse (separatorListParser (char ',') (char 'a')) "a,ba";

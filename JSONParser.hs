@@ -17,7 +17,7 @@ integerParser = fmap JSONNumber natural
 
 -- do not support \" in string yet
 quotedStringParser :: Parser String
-quotedStringParser = spaceParser *> char '"' *> many (satisfy (/= '"')) <* char '"' <* spaceParser
+quotedStringParser = ignoreSpace $ char '"' *> many (satisfy (/= '"')) <* char '"'
 
 stringParser :: Parser JSON
 stringParser = fmap JSONString quotedStringParser 
