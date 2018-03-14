@@ -9,11 +9,11 @@ import Data.Char
 spaceParser :: Parser String
 spaceParser = many $ satisfy isSpace
 
+ignoreSpace :: Parser a -> Parser a
+ignoreSpace p = spaceParser *> p <* spaceParser
+
 integerParser :: Parser JSON
-integerParser = do {
-    n <- natural;
-    return $ JSONNumber n;
-}
+integerParser = fmap JSONNumber natural
 
 -- do not support \" in string yet
 quotedStringParser :: Parser String
@@ -26,7 +26,7 @@ pairParser :: Parser (String, JSON)
 pairParser = do {
     key <- quotedStringParser;
     _ <- char ':';
-    val <- jsonParser;
+    val <- valueParser;
     return (key, val);
 }
 
@@ -41,7 +41,7 @@ objectParser = do {
 arrayParser :: Parser JSON
 arrayParser = do {
     _ <- char '[';
-    xs <- separatorListParser (char ',') jsonParser;
+    xs <- separatorListParser (char ',') valueParser;
     _ <- char ']';
     return $ JSONArray xs;
 }
@@ -55,15 +55,26 @@ trueParser = fmap (const $ JSONBool True) (string "true")
 falseParser :: Parser JSON
 falseParser = fmap (const $ JSONBool False) (string "false")
 
-jsonParser :: Parser JSON
-jsonParser =
-    spaceParser *> value <* spaceParser where
+
+valueParser :: Parser JSON
+valueParser =
+    ignoreSpace value where
         value = stringParser <|>
             integerParser <|>
             objectParser <|>
             arrayParser <|>
             trueParser <|>
-            falseParser
+            falseParser <|>
+            nullParser
+
+-- http://www.ietf.org/rfc/rfc4627.txt
+-- "   A JSON text is a serialized object or array."
+jsonParser :: Parser JSON
+jsonParser =
+    ignoreSpace value where
+        value = 
+            objectParser <|>
+            arrayParser
             
 
 parseJSON :: String -> Maybe JSON
