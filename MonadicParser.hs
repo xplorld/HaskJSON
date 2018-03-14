@@ -20,7 +20,7 @@ instance Functor Parser where
     fmap f m = Parser $ \s -> [(f x, y) | (x, y) <- parse m s]
     -- a <$ pb = Parser $ \s -> [(a, s1) | (_, s1) <- parse pb s]
 
--- p1 <|> p2: if p1 nor success, use p2
+-- p1 <|> p2: if p1 not success, use p2
 instance Alternative Parser where
     empty = failure
     p1 <|> p2 = Parser $ \s ->
@@ -30,7 +30,7 @@ instance Alternative Parser where
 
 -- mplus p q: p and q are both acceptable
 instance MonadPlus Parser where
-    mzero = failure 
+    mzero = failure
     mplus p q = Parser (\cs -> parse p cs ++ parse q cs)
 
 
@@ -42,14 +42,11 @@ failure = Parser $ const []
 
 anyChar :: Parser Char
 anyChar = Parser $ \case
-        c:cs -> [(c, cs)]
-        [] -> []
+    c : cs -> [(c, cs)]
+    []     -> []
 
 satisfy :: (Char -> Bool) -> Parser Char
-satisfy p = anyChar >>= \c ->
-  if p c
-  then unit c
-  else failure
+satisfy p = anyChar >>= \c -> if p c then unit c else failure
 
 char :: Char -> Parser Char
 char c = satisfy (c ==)
@@ -58,20 +55,25 @@ natural :: Parser Integer
 natural = read <$> some (satisfy isDigit)
 
 string :: String -> Parser String
-string [] = return ""
-string (c:cs) = do {
-    _ <- char c; 
-    _ <- string cs;
-    return (c:cs)
-}
+string []       = return ""
+string (c : cs) = do
+    _ <- char c
+    _ <- string cs
+    return (c : cs)
 
 -- utils
 
 separatorListParser :: Parser a -> Parser b -> Parser [b]
-separatorListParser separator element =
-    do { -- many list
-        x <- element;
-        xs <- many (separator *> element);
-        return $ x:xs;
-    } <|>
-    pure [] -- zero list
+separatorListParser separator element = manyList <|> emptyList
+  where
+    manyList = do -- many list
+        x  <- element
+        xs <- many (separator *> element)
+        return $ x : xs
+    emptyList = pure [] -- zero list
+
+
+
+
+
+
