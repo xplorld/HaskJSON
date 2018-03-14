@@ -20,7 +20,7 @@ main = do {
     _ <- putStrLn $ format $ JSONObject [("hello", JSONString "world"),
                                          ("key", JSONObject [("key2", JSONNumber 12)])];
     _  <- putStrLn $ format $ fromMaybe JSONNull  $ parseJSON "{\"hello\":\"world\",\"key\":{\"key2\":12}}";
-    _ <- print $ parse jsonParser "{\"hello\":\"world\",\"key\":{\"key2\":12}, \"a\": [1,2,3]}";
+    _ <- print $ parse jsonParser "{\"hello\":\"world\",\"key\":{\"key2\":12},\t \"a\": [1,2,3]}";
     _ <- print $ parse jsonParser "{\"a\":[1,2,3]}";
     _ <- print $ parse objectParser "{}";
     _ <- print $ parse arrayParser "[1,2,3]";

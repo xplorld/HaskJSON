@@ -20,10 +20,7 @@ quotedStringParser :: Parser String
 quotedStringParser = spaceParser *> char '"' *> many (satisfy (/= '"')) <* char '"' <* spaceParser
 
 stringParser :: Parser JSON
-stringParser = do {
-    str <- quotedStringParser;
-    return $ JSONString str;
-}
+stringParser = fmap JSONString quotedStringParser 
 
 pairParser :: Parser (String, JSON)
 pairParser = do {
@@ -50,22 +47,13 @@ arrayParser = do {
 }
 
 nullParser :: Parser JSON
-nullParser = do {
-    _ <- string "null";
-    return JSONNull;
-}
+nullParser = fmap (const JSONNull) (string "null")
 
 trueParser :: Parser JSON
-trueParser = do {
-    _ <- string "true";
-    return $ JSONBool True;
-}
+trueParser = fmap (const $ JSONBool True) (string "true")
 
 falseParser :: Parser JSON
-falseParser = do {
-    _ <- string "false";
-    return $ JSONBool False;
-}
+falseParser = fmap (const $ JSONBool False) (string "false")
 
 jsonParser :: Parser JSON
 jsonParser =
