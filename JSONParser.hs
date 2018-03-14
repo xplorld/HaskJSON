@@ -26,7 +26,7 @@ numberParser = fmap (JSONNumber . read) numberStringParser where
     digitsP = some (satisfy isDigit)
     isNonZeroDigit c = isDigit c && (/= '0') c
 
-
+-- todo: decode speical chars and hexes
 stringCharParser :: Parser String
 stringCharParser = ordinary <|> specialChar <|> hexUnicode
   where
