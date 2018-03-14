@@ -29,7 +29,7 @@ main = do
     _ <- print $ parse jsonParser "{\"a\":[1,2,3]}"
     _ <- print $ parse objectParser "{}"
     _ <- print $ parse arrayParser "[1,2,3]"
-    _ <- print $ parse integerParser "12"
+    _ <- print $ parse numberParser "12"
     _ <- print $ parse jsonParser "12 "
     _ <- print $ parse pairParser " \"hello\":\"world\""
     _ <- print $ parse spaceParser "   "
@@ -37,7 +37,7 @@ main = do
     _ <- print $ parse (separatorListParser (char ',') (char 'a')) "a,ba"
     _ <- print $ parse (separatorListParser (char ',') (char 'a')) "a,ba"
     _ <- print $ format $ fromMaybe JSONNull $ parseJSON
-        "{\"hello\":\"world\",\"key\t\b\":{\"ke\\u0233y2\":12}}"
+        "{\"hello\":\"world\",\"key\t\b\":{\"ke\\u0233y2\":-1.4e1212}}"
     return ()
 
 

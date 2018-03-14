@@ -63,6 +63,15 @@ string (c : cs) = do
 
 -- utils
 
+optionalListP :: Parser [a] -> Parser [a]
+optionalListP p = p <|> pure []
+
+optionalP :: Parser a -> Parser [a]
+optionalP = optionalListP . fmap (: []) 
+
+concatM :: Monad m => [m [a]] -> m [a]
+concatM t = concat <$> sequence t
+
 separatorListParser :: Parser a -> Parser b -> Parser [b]
 separatorListParser separator element = manyList <|> emptyList
   where

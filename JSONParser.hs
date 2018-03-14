@@ -13,8 +13,19 @@ spaceParser = many $ satisfy isSpace
 ignoreSpace :: Parser a -> Parser a
 ignoreSpace p = spaceParser *> p <* spaceParser
 
-integerParser :: Parser JSON
-integerParser = fmap JSONNumber natural
+numberParser :: Parser JSON
+numberParser = fmap (JSONNumber . read) numberStringParser where
+    numberStringParser = concatM [signP, bodyDigitsP, fractionsP, expP]
+    signP = optionalP $ char '-'
+    bodyDigitsP = string "0" <|>  concatM [ (:[]) <$> satisfy isNonZeroDigit, many $ satisfy isDigit]
+    fractionsP = optionalListP $ concatM [string ".", digitsP]
+    expP = optionalListP $ concatM [
+                    fmap (: []) $ satisfy $ flip elem "eE",
+                    optionalP $ satisfy $ flip elem "+-",
+                    digitsP]
+    digitsP = some (satisfy isDigit)
+    isNonZeroDigit c = isDigit c && (/= '0') c
+
 
 stringCharParser :: Parser String
 stringCharParser = ordinary <|> specialChar <|> hexUnicode
@@ -72,7 +83,7 @@ valueParser = ignoreSpace value
   where
     value =
         stringParser
-            <|> integerParser
+            <|> numberParser
             <|> objectParser
             <|> arrayParser
             <|> trueParser
