@@ -4,9 +4,10 @@ import JSON
 import MonadicParser
 import Control.Applicative
 import Data.Maybe
+import Data.Char
 
 spaceParser :: Parser String
-spaceParser = many $ char ' '
+spaceParser = many $ satisfy isSpace
 
 integerParser :: Parser JSON
 integerParser = do {
