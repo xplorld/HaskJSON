@@ -17,8 +17,6 @@ integerParser :: Parser JSON
 integerParser = fmap JSONNumber natural
 
 stringCharParser :: Parser String
-
--- stringCharParser = ordinary <|> specialChar <|> hexUnicode
 stringCharParser = ordinary <|> specialChar <|> hexUnicode
   where
     ordinary    = some $ satisfy $ flip notElem ['"', '\\']
